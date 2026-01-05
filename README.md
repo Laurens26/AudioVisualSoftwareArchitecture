@@ -1,93 +1,166 @@
-# AudioVisualSoftwareArchitecture
+# Audio-Visual Software Architecture
 
+This repository provides the **top-level orchestration and documentation** of a modular **Audio-Visual Sensor Fusion Software Architecture** developed for reproducible research on multi-modal detection, localization, tracking, and evaluation of moving speakers in indoor environments.
 
+The repository serves as an **umbrella project** that integrates all software modules of the pipeline as **Git submodules**, alongside experimental data and thesis documentation.
 
-## Getting started
+![Architecture Overview](assets/AVSensorFusionArchitecture.svg)
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+---
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Overview
 
-## Add your files
+The complete processing pipeline consists of the following stages:
 
-* [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+1. **Visual Scene Simulation** (Unity)
+2. **Room Acoustics Simulation** (gpuRIR)
+3. **Video Detector** (CNN-based object detection)
+4. **Audio Detector** (3D positional sound source localization)
+5. **Audio-Visual Sensor Fusion** (multi-object tracking)
+6. **Tracking Evaluation** (HOTA / TrackEval)
+
+Each stage is implemented as an **independent software module** and linked through standardized JSONL interfaces.
+
+---
+
+## Software Modules
+Refer to the README of each git submodule repository for details.
+
+### Visual Scene Simulation (Unity)
+**Submodule:** `visualsimulationunity`
+
+- Generates synthetic RGB and depth images
+- Simulates fisheye cameras and dynamic human motion
+- Exports time-stamped 3D ground-truth speaker positions
+
+---
+
+### Room Acoustics Simulation
+**Submodule:** `gpuRIR`
+
+- GPU-accelerated image source method (ISM)
+- Generates room impulse responses (RIRs)
+- Renders multi-channel microphone signals for moving speakers
+
+---
+
+### Video Detector
+**Submodule:** `cnnvideodetektor`
+
+- CNN-based video object detection
+- Processes RGB image streams
+- Outputs 3D video detections
+
+---
+
+### Audio Detector (3D-SSL)
+**Submodule:** `ssl4ips`
+
+- Closed-form analytical 3D positional sound source localization
+- Uses β-GCC-PHAT for TDOA estimation
+- Outputs audio localization detections in world coordinates
+
+---
+
+### Audio-Visual Sensor Fusion
+**Submodule:** `audiovisualsensorfusion`
+
+- Implements MS-GLMB multi-object tracking
+- Fuses audio and video detections
+- Handles track birth, death, and uncertainty
+
+---
+
+### Tracking Evaluation
+**Submodule:** `trackeval`
+
+- Uses TrackEval HOTA reference implementation
+- Compares predicted tracks with ground-truth
+- Reports detection, association, and localization metrics
+
+---
+
+## Data Flow and Interfaces
+
+All modules communicate through **well-defined JSONL interfaces**:
+
+- `groundtruth_sources.jsonl`
+- `audio_localizations.jsonl`
+- `video_localizations.jsonl`
+- `fusion_tracks.jsonl`
+
+This design allows:
+- Modular replacement of algorithms
+- Independent evaluation of components
+- Reproducible experimentation
+
+---
+
+## Generated Experiment (Scenario) Folder Structure
+
+Each simulation session follows a standardized directory structure shared across all software modules:
 
 ```
-cd existing_repo
-git remote add origin https://code.fbi.h-da.de/est/est-workgroup/audiovisualsoftwarearchitecture.git
-git branch -M main
-git push -uf origin main
+📁 experiment_001/
+├── config.json
+├── groundtruth_sources.jsonl
+├── audio/
+│   └── wav/
+│       └── multichannel_audio_<timestamp>.wav
+├── video/
+│   ├── rgb/
+│   │   └── RGB_frame_<timestamp>.png
+│   └── depth/
+│       └── Depth_frame_<timestamp>.png
+├── localization/
+│   ├── audio_localizations.jsonl
+│   └── video_localizations.jsonl
+└── tracking/
+    ├── audio_tracking.jsonl
+    ├── video_tracking.jsonl
+    └── audio_video_tracking.jsonl
 ```
 
-## Integrate with your tools
+## Master’s Thesis Results
 
-* [Set up project integrations](https://code.fbi.h-da.de/est/est-workgroup/audiovisualsoftwarearchitecture/-/settings/integrations)
+The following table summarizes the **combined tracking results over all scenarios**, as reported in the master’s thesis.
 
-## Collaborate with your team
+| Modality | HOTA ↑ | DetA ↑ | AssA ↑ | DetRe ↑ | DetPr ↑ | AssRe ↑ | AssPr ↑ | LocA ↑ |
+|--------|--------|--------|--------|---------|---------|---------|---------|--------|
+| M1 (Audio)          | 26.32 | 18.08 | 38.40 | 18.26 | 93.59 | 38.92 | 89.60 | 92.66 |
+| M2 (Video)          | 68.54 | 68.61 | 68.49 | 70.40 | 93.10 | 70.17 | 93.74 | 91.83 |
+| M3 (Audio + Video)  | **70.29** | 69.38 | 71.24 | 71.18 | 93.39 | 72.88 | 93.97 | 92.04 |
 
-* [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+The results demonstrate that for the dataset MOT25A, MOT25V, MOT25AV, the **audio-visual fusion outperforms unimodal tracking**, particularly in terms of association accuracy and overall HOTA score.
 
-## Test and Deploy
+---
 
-Use the built-in continuous integration in GitLab.
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## Publication
 
-***
+If you use this code, please cite the following papers:
 
-# Editing this README
+```
+@INPROCEEDINGS{2025_Sillekens_3DSSL_SRP,
+  author={L. Sillekens and O. Rudolf and M. Thißen and I. Penner and S. Seyfarth and E. Hergenröther and J.-P. Akelbein},
+  booktitle={2025 10th International Conference on Frontiers of Signal Processing (ICFSP)},
+  title={A Non-invasive Measurement System for Evaluating 3D Indoor Sound Source Localization Techniques},
+  year={2025},
+  keywords={3D positional sound source localization, indoor microphone array geometry,
+            beta-gcc-phat, high reverberation time, speaker localization}
+}
+```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+```
+@article{2025_Oskar_Rudolf,
+  title={Implementation of visual people counting algorithms in embedded systems},
+  author={O. Rudolf and R. Hecker and M. Thi{\ss}en and L. Sillekens and I. Penner and J.-P. Akelbein and S. Seyfarth and Elke Hergenr{\"o}ther},
+  journal={Computer Science Research Notes},
+  year={2025},
+  url={http://www.doi.org/10.24132/CSRN.2025-4}
+}
+```
 
-## Suggestions for a good README
+## Contact
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Created by: **Laurens Sillekens**  
