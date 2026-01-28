@@ -1,18 +1,18 @@
 [submodule "gpuRIR"]
 	path = gpuRIR
-	url = https://code.fbi.h-da.de/est/est-workgroup/gpuRIR
+	url = https://github.com/Laurens26/gpuRIR
 [submodule "ssl4ips"]
 	path = ssl4ips
 	url = https://code.fbi.h-da.de/est/est-workgroup/ssl4ips
 [submodule "cnnvideodetektor"]
 	path = cnnvideodetektor
 	url = https://code.fbi.h-da.de/est/est-workgroup/cnnvideodetektor
-[submodule "audiovisualsensorfusion"]
+[submodule "AudioVisualSensorFusion"]
 	path = audiovisualsensorfusion
-	url = https://code.fbi.h-da.de/est/est-workgroup/audiovisualsensorfusion
-[submodule "trackeval"]
+	url = https://github.com/Laurens26/AudioVisualSensorFusion
+[submodule "TrackEval"]
 	path = trackeval
-	url = https://code.fbi.h-da.de/est/est-workgroup/trackeval
-[submodule "visualsimulationunity"]
+	url = https://github.com/Laurens26/TrackEval
+[submodule "VisualSimulationUnity"]
 	path = visualsimulationunity
-	url = https://code.fbi.h-da.de/est/est-workgroup/visualsimulationunity
+	url = https://github.com/Laurens26/VisualSimulationUnity
