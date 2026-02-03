@@ -50,6 +50,7 @@ Refer to the README of each git submodule repository for details.
 - CNN-based video object detection
 - Processes RGB image streams
 - Outputs 3D video detections
+- **Note:** This module is not fully published due to third-party intellectual property restrictions.
 
 ---
 
@@ -59,6 +60,8 @@ Refer to the README of each git submodule repository for details.
 - Closed-form analytical 3D positional sound source localization
 - Uses β-GCC-PHAT for TDOA estimation
 - Outputs audio localization detections in world coordinates
+
+- **Note:** This module is not fully published due to third-party intellectual property restrictions.
 
 ---
 
