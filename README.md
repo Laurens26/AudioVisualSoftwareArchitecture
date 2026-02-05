@@ -149,8 +149,10 @@ If you use this code, please cite the following papers:
   booktitle={2025 10th International Conference on Frontiers of Signal Processing (ICFSP)},
   title={A Non-invasive Measurement System for Evaluating 3D Indoor Sound Source Localization Techniques},
   year={2025},
+  pages={79-86},
   keywords={3D positional sound source localization, indoor microphone array geometry,
-            beta-gcc-phat, high reverberation time, speaker localization}
+            beta-gcc-phat, high reverberation time, speaker localization},
+  url={http://www.doi.org/10.1109/ICFSP67350.2025.11353692}
 }
 ```
 
